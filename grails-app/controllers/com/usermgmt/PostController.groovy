@@ -2,5 +2,6 @@ package com.usermgmt
 
 class PostController {
 
-    def index() { }
+    def index() { 
+    	render "hix"}
 }

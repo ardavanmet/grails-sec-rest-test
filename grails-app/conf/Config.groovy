@@ -102,6 +102,14 @@ log4j.main = {
     //appenders {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
+    info 'grails.plugin.springsecurity.web.filter.DebugFilter'
+    
+    debug  'com.odobo',
+           'grails.app.controllers.com.odobo',
+           'grails.app.services.com.odobo',
+           'org.pac4j',
+           'org.springframework.security',
+           'com.usermgmt.springsec.GeneralOauthUserDetailsService'
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
            'org.codehaus.groovy.grails.web.pages',          // GSP
@@ -116,19 +124,80 @@ log4j.main = {
            'net.sf.ehcache.hibernate'
 }
 
+grails.mail.host = "smtp.gmail.com"
+grails.mail.port = 465
+grails.mail.username = "ardavan.metghalchi@gmail.com"
+grails.mail.password = "gilecorco1"
+grails.mail.props = ["mail.smtp.auth":"true",
+            "mail.smtp.socketFactory.port":"465",
+            "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
+            "mail.smtp.socketFactory.fallback":"false"]
 
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.usermgmt.SecUser'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.usermgmt.SecUserSecRole'
 grails.plugin.springsecurity.authority.className = 'com.usermgmt.SecRole'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-	'/':                              ['permitAll'],
+    '/':                              ['permitAll'],
+    '/post/**':                       ['permitAll'],
 	'/index':                         ['permitAll'],
 	'/index.gsp':                     ['permitAll'],
 	'/assets/**':                     ['permitAll'],
 	'/**/js/**':                      ['permitAll'],
 	'/**/css/**':                     ['permitAll'],
 	'/**/images/**':                  ['permitAll'],
-	'/**/favicon.ico':                ['permitAll']
+	'/**/favicon.ico':                ['permitAll'],
+    '/register/register':             ['permitAll'],
+    '/dbconsole/**':                  ['permitAll'],
+    '/user/**':                       ['permitAll'],
+    '/role/**':                       ['permitAll']
 ]
+grails.plugin.springsecurity.ui.register.defaultRoleNames = ['ROLE_USER']
+
+// Spring Security Rest
+grails.plugin.springsecurity.rest.login.active=true
+grails.plugin.springsecurity.rest.login.endpointUrl="/api/login"
+grails.plugin.springsecurity.rest.login.failureStatusCode=401
+grails.plugin.springsecurity.rest.logout.endpointUrl="/api/logout"
+
+grails.plugin.springsecurity.rest.token.validation.headerName="X-Auth-Token"
+
+grails.plugin.springsecurity.rest.login.usernameParameter = "username"
+grails.plugin.springsecurity.rest.login.passwordParameter = "password"
+
+grails.plugin.springsecurity.rest.login.useJsonCredentials=true
+grails.plugin.springsecurity.rest.login.usernamePropertyName="username"
+grails.plugin.springsecurity.rest.login.passwordPropertyName="password"
+//By default the plugin generates JWT tokens of 32 alphanumeric characters.
+grails.plugin.springsecurity.rest.token.generation.useSecureRandom=true
+grails.plugin.springsecurity.rest.token.generation.useUUID=false
+// Signed JWT
+grails.plugin.springsecurity.rest.token.storage.useJwt=true
+grails.plugin.springsecurity.rest.token.storage.jwt.useSignedJwt=true
+grails.plugin.springsecurity.rest.token.storage.jwt.secret='qrD6h8K6S9503Q06Y6Rfk21TErImPYqa'
+grails.plugin.springsecurity.rest.token.storage.jwt.expiration=3600
+
+// Make sure that the stateless chain applies not only to your REST controllers, 
+// but also to the URL's where this plugin filters are listening: by default, /api/login for authentication, /api/logout for logout and /api/validate for token validation. 
+grails {
+    plugin {
+        springsecurity {
+            filterChain {
+                chainMap = [
+                    '/api/**': 'JOINED_FILTERS,-anonymousAuthenticationFilter,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter',
+                    '/profile/**': 'JOINED_FILTERS,-anonymousAuthenticationFilter,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter',
+                    '/post/**': 'anonymousAuthenticationFilter,restTokenValidationFilter,restExceptionTranslationFilter,filterInvocationInterceptor',
+                    '/**': 'JOINED_FILTERS,-restTokenValidationFilter,-restExceptionTranslationFilter'
+                ]
+            }
+            rest {
+                token {
+                    validation {
+                        enableAnonymousAccess = true
+                        useBearerToken = true
+                    }
+                }
+            }
+//Other Spring Security settings //...
+} } }
 
