@@ -154,6 +154,17 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 ]
 grails.plugin.springsecurity.ui.register.defaultRoleNames = ['ROLE_USER']
 
+//cors config.
+cors.enabled=true
+cors.url.pattern = '/api/*'
+cors.headers=[
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': true,
+    'Access-Control-Allow-Headers': 'origin, authorization, accept, content-type, X-Auth-Token, x-requested-with',
+    'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS',
+    'Access-Control-Max-Age': 3600
+    ]
+
 // Spring Security Rest
 grails.plugin.springsecurity.rest.login.active=true
 grails.plugin.springsecurity.rest.login.endpointUrl="/api/login"
